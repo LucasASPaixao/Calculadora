@@ -1,0 +1,94 @@
+---
+description: Regras para a calculadora web de quatro operações com dois visores
+alwaysApply: true
+---
+
+## Escopo da calculadora
+
+- Interface web em **HTML5** e **CSS3**.
+- Lógica em **JavaScript** (sem dependências externas).
+- Suporte às quatro operações básicas: **adição (+)**, **subtração (-)**, **multiplicação (*)** e **divisão (/)**.
+- Aceita **números positivos e negativos**.
+- Dois visores:
+  - **Visor superior ("expressão")**: mostra a sequência completa digitada (ex.: `-3+5*9/2`).
+  - **Visor inferior ("resultado")**: mostra o resultado em tempo real da expressão válida digitada acima.
+
+## Comportamento de cálculo
+
+- **Atualização em tempo real**:
+  - Sempre que o usuário digitar um número, operador ou alterar a expressão válida, o resultado deve ser recalculado e exibido no visor inferior.
+  - Em caso de expressão inválida no meio da digitação (ex.: `5++`), o visor inferior deve manter o último resultado válido ou ficar vazio, mas **não deve quebrar a aplicação**.
+- **Tecla "="**:
+  - Ao pressionar `"="`, a expressão do visor superior é considerada **finalizada**.
+  - O resultado final permanece **apenas** no visor inferior.
+  - A expressão do visor superior é **limpa**.
+  - Se o usuário continuar digitando após `"="`, o valor do visor inferior deve ser **copiado para o visor superior** como ponto de partida, e a nova expressão continua a partir desse valor.
+- **Operações com negativos**:
+  - Deve ser possível iniciar a expressão com número negativo (ex.: `-3+5`).
+  - Deve ser possível usar números negativos após operadores (ex.: `5*-2`), respeitando as regras de expressão matemática.
+
+## Regras de organização e arquitetura
+
+- **Separação de responsabilidades**:
+  - HTML responsável apenas pela **estrutura** (marcação semântica e elementos dos visores e botões).
+  - CSS responsável apenas pelo **layout e estilo**, seguindo boas práticas modernas (layout responsivo simples, uso de classes coesas).
+  - JavaScript responsável pela **lógica de negócio e orquestração de eventos da UI**.
+- **Módulos e funções**:
+  - Organizar o código JavaScript em funções pequenas e coesas (ex.: `parseExpression`, `evaluateExpression`, `updateDisplay`, `handleKeyPress`).
+  - Evitar funções muito longas; quando começarem a ficar complexas, extrair funções auxiliares.
+  - Centralizar a lógica de avaliação da expressão em um único ponto, evitando duplicação.
+- **Estado da calculadora**:
+  - Manter um objeto ou estrutura de estado clara (ex.: `currentExpression`, `currentResult`, `lastActionWasEquals`).
+  - Todos os updates de UI devem ser derivados desse estado, nunca de manipulação solta de DOM.
+
+## Regras de UX e comportamento visual
+
+- **Dois visores bem distintos**:
+  - Visor superior com estilo que remeta a "histórico de expressão".
+  - Visor inferior com destaque maior para o resultado.
+- **Feedback imediato**:
+  - Teclas (botões) devem ter feedback visual de clique.
+  - Evitar bloqueios de interface; todos os cálculos devem ser rápidos para a escala de uso esperada.
+- **Tratamento de erros visuais**:
+  - Em caso de expressão inválida, **não usar alert** do navegador.
+  - Preferir indicar erro de forma discreta (ex.: limpar o resultado ou exibir algo neutro) sem travar a interação.
+
+## Boas práticas e padrões de mercado
+
+- **Clean Code**:
+  - Nomes de variáveis e funções descritivos, em inglês ou português, mas consistentes.
+  - Evitar números mágicos; quando necessário, extrair constantes.
+  - Comentários apenas quando o **porquê** não for óbvio pelo código.
+- **HTML/CSS modernos**:
+  - Usar semântica básica (`main`, `section`, etc.) onde fizer sentido.
+  - Evitar estilos inline; preferir classes reutilizáveis no CSS.
+  - Estrutura preparada para ser responsiva (flexbox ou grid simples).
+- **JavaScript**:
+  - Evitar o uso de `eval`. Se for necessário avaliar a expressão como string, deve ser feito com **cuidado extremo**, sanitizando a entrada e limitando o escopo apenas às operações permitidas.
+  - Preferir `addEventListener` a atributos `onclick` no HTML.
+
+## Restrições e ambientes
+
+- Não adicionar bibliotecas externas (como frameworks JS) sem solicitação explícita.
+- Pensar desde o início em uso em **ambientes dev, test e prod**, mantendo o código simples de configurar e implantar.
+- Não incluir dados simulados na lógica principal; quaisquer mocks devem ser usados apenas em contexto de testes.
+
+## Próximos passos esperados
+
+- Quando solicitado, criar:
+  - O **HTML** da calculadora respeitando estes visores e comportamentos.
+  - O **CSS** com layout limpo, moderno e responsivo.
+  - O **JavaScript** implementando a lógica de expressão e atualização em tempo real, seguindo estas regras.
+
+## Sincronização de documentação
+
+- Sempre que houver **atualizações relevantes no código** (HTML, CSS ou JavaScript) que alterem:
+  - comportamento da calculadora,
+  - regras de UX,
+  - fluxos de estado ou
+  - decisões técnicas importantes,
+- devem ser avaliados e atualizados, conforme necessário, **em conjunto**:
+  - `RESEARCH_BRIEF.md`
+  - `PRD.md`
+  - `SPECS.md`
+- Mudanças estruturais ou de fluxo **não devem** ser consideradas concluídas sem refletir nesses documentos.
