@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora Básica</title>
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <main class="calculator" aria-label="Calculadora de quatro operações">
+      <section class="display" aria-live="off">
+        <div
+          id="display-expression"
+          class="display-top"
+          aria-label="Expressão atual"
+        ></div>
+        <div
+          id="display-result"
+          class="display-bottom"
+          aria-label="Resultado"
+          aria-live="polite"
+        >
+          0
+        </div>
+      </section>
+
+      <section class="keys" aria-label="Teclas da calculadora">
+        <!-- Linha de controles (similar calculadora padrão) -->
+        <button type="button" class="key key-control" data-action="clear">
+          C
+        </button>
+        <button type="button" class="key key-control" data-action="delete">
+          DEL
+        </button>
+        <div class="key-spacer" aria-hidden="true"></div>
+        <button type="button" class="key key-operator" data-action="divide">
+          /
+        </button>
+
+        <!-- 7 8 9 e * -->
+        <button type="button" class="key" data-action="digit" data-value="7">
+          7
+        </button>
+        <button type="button" class="key" data-action="digit" data-value="8">
+          8
+        </button>
+        <button type="button" class="key" data-action="digit" data-value="9">
+          9
+        </button>
+        <button type="button" class="key key-operator" data-action="multiply">
+          *
+        </button>
+
+        <!-- 4 5 6 e - -->
+        <button type="button" class="key" data-action="digit" data-value="4">
+          4
+        </button>
+        <button type="button" class="key" data-action="digit" data-value="5">
+          5
+        </button>
+        <button type="button" class="key" data-action="digit" data-value="6">
+          6
+        </button>
+        <button type="button" class="key key-operator" data-action="subtract">
+          -
+        </button>
+
+        <!-- 1 2 3 e + -->
+        <button type="button" class="key" data-action="digit" data-value="1">
+          1
+        </button>
+        <button type="button" class="key" data-action="digit" data-value="2">
+          2
+        </button>
+        <button type="button" class="key" data-action="digit" data-value="3">
+          3
+        </button>
+        <button type="button" class="key key-operator" data-action="add">
+          +
+        </button>
+
+        <!-- 0, ponto e = na última linha -->
+        <button
+          type="button"
+          class="key key-zero"
+          data-action="digit"
+          data-value="0"
+        >
+          0
+        </button>
+        <button type="button" class="key" data-action="decimal" data-value=".">
+          .
+        </button>
+        <button type="button" class="key key-equals" data-action="equals">
+          =
+        </button>
+      </section>
+    </main>
+
+    <script src="assets/js/calculator.js"></script>
+  </body>
+</html>
+
