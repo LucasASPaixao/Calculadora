@@ -34,6 +34,7 @@ O diferencial proposto:
 - Dois visores bem definidos (expressão e resultado).
 - Atualização contínua do resultado enquanto o usuário monta a expressão.
 - Fluxo claro depois de `=` (resultado permanece, expressão some, e o resultado pode ser reusado).
+- Layout de teclado numérico inspirado na calculadora padrão (7–8–9 /, 4–5–6 *, 1–2–3 -, 0 . =).
 
 ## 5. Hipóteses de valor
 

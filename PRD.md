@@ -79,7 +79,12 @@ Uma calculadora web, simples e moderna, com:
 
 - Layout de calculadora tradicional:
   - Dois visores na parte superior.
-  - Grade de botões abaixo, organizada de forma familiar (linhas de dígitos e operadores).
+  - Grade de botões abaixo, organizada de forma familiar, com layout fixo:
+    - Linha: `C`, `DEL`, espaço em branco, `/`
+    - Linha: `7`, `8`, `9`, `*`
+    - Linha: `4`, `5`, `6`, `-`
+    - Linha: `1`, `2`, `3`, `+`
+    - Linha: `0` (ocupando duas colunas), `.`, `=`
 - Diferenciação visual:
   - Visor superior com tipografia menor/mais discreta (histórico de expressão).
   - Visor inferior com tipografia maior e destaque (resultado principal).

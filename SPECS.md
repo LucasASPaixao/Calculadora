@@ -96,9 +96,15 @@ calculatorState = {
   - `section.display` em coluna, com:
     - `display-top` com fonte menor e cor mais suave.
     - `display-bottom` com fonte maior, peso maior, contraste alto.
-  - `section.keys` em grade:
+  - `section.keys` em grade de 4 colunas, com:
     - Tamanho consistente dos botões.
-    - Coluna dedicada para operadores, se desejado, para melhor usabilidade.
+    - Coluna da direita dedicada apenas a operadores e `=`.
+    - Layout fixo de linhas:
+      - `C`, `DEL`, espaço reservado, `/`
+      - `7`, `8`, `9`, `*`
+      - `4`, `5`, `6`, `-`
+      - `1`, `2`, `3`, `+`
+      - `0` (span de 2 colunas), `.`, `=`
 
 - Estilo:
   - Tema básico (claro ou escuro), com cores suaves e bom contraste.
