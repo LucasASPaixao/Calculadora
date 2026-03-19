@@ -77,7 +77,7 @@ body {
   font-size: 1.1rem;
   font-weight: 500;
   color: #e5e7eb;
-  background: #1f2933;
+  background: #61a0ca;
   cursor: pointer;
   transition:
     background 0.15s ease,
@@ -100,6 +100,7 @@ body {
   background: #4338ca;
 }
 
+
 .key-operator:hover {
   background: #4f46e5;
 }
@@ -108,9 +109,11 @@ body {
   background: #374151;
 }
 
+
 .key-control:hover {
   background: #4b5563;
 }
+
 
 .key-equals {
   background: #10b981;
@@ -121,8 +124,14 @@ body {
   background: #34d399;
 }
 
+
 .key-zero {
+  background: #000000;
   grid-column: span 2;
+}
+
+.key-zero:hover {
+  background: #629de0;
 }
 
 .key-spacer {
@@ -138,5 +147,37 @@ body {
   .display-bottom {
     font-size: 1.4rem;
   }
+}
+
+#delete-button {
+  background: #e90712;
+}
+#add-button {
+  background: #3429688c;
+}
+#subtract-button {
+  background: #6d3288;
+}
+#multiply-button {
+  background: #3a9e7d;
+}
+#divide-button {
+  background: #265983;
+}
+
+#add-button:hover {
+  background: #913b94;
+}
+#subtract-button:hover {
+  background: #2f7a6d;
+}
+#multiply-button:hover {
+  background: #83282c;
+}
+#divide-button:hover {
+  background: #0a573d;
+}
+#delete-button:hover {
+  background: #15c023;
 }
 
