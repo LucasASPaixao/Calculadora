@@ -1,0 +1,23 @@
+[33mcommit 68faab3128095e3ae57dc2e87eac5aa15a85e81d[m[33m ([m[1;36mHEAD[m[33m, [m[1;32mestado-68faab3[m[33m)[m
+Author: LucasASPaixao <lucas.a.s.p@hotmail.com>
+Date:   Wed Mar 18 12:21:18 2026 -0300
+
+    docs: adiciona README.md com descrição do projeto, funcionalidades, instruções de uso e estrutura
+
+[33mcommit 413ac836ff3e5f686bac1d4a15409c3b4b01effe[m
+Author: LucasASPaixao <lucas.a.s.p@hotmail.com>
+Date:   Wed Mar 18 02:32:05 2026 -0300
+
+    feat: atualiza layout da calculadora com grade de botões fixa e diferenciação visual nos visores
+
+[33mcommit 05920d7f09f8fc746d2e225f35636814a903793d[m
+Author: LucasASPaixao <lucas.a.s.p@hotmail.com>
+Date:   Tue Mar 17 11:46:22 2026 -0300
+
+    feat: implementa calculadora básica com interface HTML, CSS e lógica JavaScript
+
+[33mcommit 229a2ceb39982c4db9c3ae4136ebebcdc800263f[m
+Author: LucasASPaixao <lucas.a.s.p@hotmail.com>
+Date:   Tue Mar 17 11:16:59 2026 -0300
+
+    chore: inicializa projeto Calculadora
