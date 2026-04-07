@@ -231,11 +231,24 @@ function handleKeyDown(event) {
   }
 }
 
-if (keysContainer) {
+let calculatorUiBound = false;
+
+function bindCalculatorUI() {
+  if (calculatorUiBound || !keysContainer) {
+    return;
+  }
   keysContainer.addEventListener("click", handleButtonClick);
+  document.addEventListener("keydown", handleKeyDown);
+  calculatorUiBound = true;
+  updateDisplays();
 }
 
-document.addEventListener("keydown", handleKeyDown);
-
-updateDisplays();
+function unbindCalculatorUI() {
+  if (!calculatorUiBound || !keysContainer) {
+    return;
+  }
+  keysContainer.removeEventListener("click", handleButtonClick);
+  document.removeEventListener("keydown", handleKeyDown);
+  calculatorUiBound = false;
+}
 

@@ -18,6 +18,253 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+/* --- Autenticação --- */
+.auth-panel {
+  width: 100%;
+  max-width: 380px;
+  padding: 1rem;
+}
+
+.auth-card {
+  padding: 1.75rem 1.5rem;
+  border-radius: 1rem;
+  background: linear-gradient(145deg, #161925, #23283a);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.auth-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.auth-subtitle {
+  margin: 0 0 1.25rem;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field label {
+  font-size: 0.85rem;
+  color: #d1d5db;
+}
+
+.field input[type="text"],
+.field input[type="password"] {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #05060b;
+  color: #f9fafb;
+  font-size: 1rem;
+}
+
+.field input:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.field-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.field-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.field-inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.field-inline label {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.btn-text {
+  flex-shrink: 0;
+  padding: 0.4rem 0.5rem;
+  border: none;
+  border-radius: 0.4rem;
+  background: #374151;
+  color: #e5e7eb;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-text:hover {
+  background: #4b5563;
+}
+
+.btn-text:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 0.6rem;
+  background: #4338ca;
+  color: #f9fafb;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
+  transition:
+    background 0.15s ease,
+    transform 0.05s ease;
+}
+
+.btn-primary:hover {
+  background: #4f46e5;
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid #a5b4fc;
+  outline-offset: 2px;
+}
+
+.auth-error {
+  min-height: 1.25em;
+  margin: 0;
+  font-size: 0.85rem;
+  color: #fca5a5;
+}
+
+.auth-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin-top: 1rem;
+  justify-content: center;
+}
+
+.link-button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: #a5b4fc;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link-button:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.auth-hint {
+  margin: 1rem 0 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* Modal recuperar senha */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.modal-dialog {
+  max-width: 400px;
+  width: 100%;
+  padding: 1.5rem;
+  border-radius: 0.85rem;
+  background: linear-gradient(145deg, #161925, #23283a);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+}
+
+.modal-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+}
+
+.modal-body {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: #d1d5db;
+  line-height: 1.45;
+}
+
+.modal-close {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* Cabeçalho da calculadora */
+.calc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.calc-header-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+.btn-logout {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.45rem;
+  background: #374151;
+  color: #e5e7eb;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-logout:hover {
+  background: #4b5563;
+}
+
+.btn-logout:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
 }
 
 .calculator {

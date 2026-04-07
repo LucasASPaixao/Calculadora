@@ -7,7 +7,164 @@
     <link rel="stylesheet" href="assets/css/styles.css" />
   </head>
   <body>
-    <main class="calculator" aria-label="Calculadora de quatro operações">
+    <section
+      id="login-view"
+      class="auth-panel"
+      aria-label="Entrar na calculadora"
+    >
+      <div class="auth-card">
+        <h1 class="auth-title">Calculadora</h1>
+        <p class="auth-subtitle">Entre para usar a calculadora</p>
+        <form id="login-form" class="auth-form" novalidate>
+          <div class="field">
+            <label for="login-username">Usuário</label>
+            <input
+              id="login-username"
+              name="username"
+              type="text"
+              autocomplete="username"
+              required
+            />
+          </div>
+          <div class="field">
+            <label for="login-password">Senha</label>
+            <div class="field-row">
+              <input
+                id="login-password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                class="btn-text"
+                id="toggle-password-login"
+                aria-pressed="false"
+              >
+                Mostrar
+              </button>
+            </div>
+          </div>
+          <div class="field field-inline">
+            <input id="login-remember" type="checkbox" name="remember" />
+            <label for="login-remember">Lembrar-me neste dispositivo</label>
+          </div>
+          <p id="login-error" class="auth-error" role="alert" aria-live="polite"></p>
+          <button type="submit" class="btn-primary">Entrar</button>
+        </form>
+        <div class="auth-links">
+          <button type="button" class="link-button" id="link-recover">
+            Recuperar senha
+          </button>
+          <button type="button" class="link-button" id="link-to-register">
+            Criar conta
+          </button>
+        </div>
+        <p class="auth-hint">
+          Conta demo: usuário <strong>demo</strong>, senha <strong>demo123</strong>
+        </p>
+      </div>
+    </section>
+
+    <section
+      id="register-view"
+      class="auth-panel is-hidden"
+      aria-hidden="true"
+      aria-label="Criar conta"
+    >
+      <div class="auth-card">
+        <h1 class="auth-title">Criar conta</h1>
+        <p class="auth-subtitle">Cadastro local (apenas demonstração)</p>
+        <form id="register-form" class="auth-form" novalidate>
+          <div class="field">
+            <label for="register-username">Usuário</label>
+            <input
+              id="register-username"
+              name="reg-username"
+              type="text"
+              autocomplete="username"
+              required
+            />
+          </div>
+          <div class="field">
+            <label for="register-password">Senha</label>
+            <div class="field-row">
+              <input
+                id="register-password"
+                name="reg-password"
+                type="password"
+                autocomplete="new-password"
+                required
+              />
+              <button
+                type="button"
+                class="btn-text"
+                id="toggle-password-register"
+                aria-pressed="false"
+              >
+                Mostrar
+              </button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="register-password-confirm">Confirmar senha</label>
+            <input
+              id="register-password-confirm"
+              name="reg-password-confirm"
+              type="password"
+              autocomplete="new-password"
+              required
+            />
+          </div>
+          <p id="register-error" class="auth-error" role="alert" aria-live="polite"></p>
+          <button type="submit" class="btn-primary">Registrar</button>
+        </form>
+        <div class="auth-links">
+          <button type="button" class="link-button" id="link-to-login">
+            Já tenho conta
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div
+      id="modal-recover"
+      class="modal is-hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="recover-title"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <h2 id="recover-title" class="modal-title">Recuperar senha</h2>
+        <p class="modal-body">
+          Em um sistema real, aqui seria enviado um link por e-mail para redefinir
+          a senha. Esta versão é só front-end e não armazena dados em servidor.
+        </p>
+        <p class="modal-body">
+          Para testar, use a conta demo (<strong>demo</strong> /
+          <strong>demo123</strong>) ou crie uma nova conta em
+          <strong>Criar conta</strong>.
+        </p>
+        <button type="button" class="btn-primary modal-close" id="modal-recover-close">
+          Fechar
+        </button>
+      </div>
+    </div>
+
+    <main
+      class="calculator is-hidden"
+      id="app-calculator"
+      aria-label="Calculadora de quatro operações"
+      aria-hidden="true"
+    >
+      <header class="calc-header">
+        <span class="calc-header-title">Calculadora</span>
+        <button type="button" class="btn-logout" id="btn-logout">
+          Sair
+        </button>
+      </header>
       <section class="display" aria-live="off">
         <div
           id="display-expression"
@@ -98,6 +255,7 @@
     </main>
 
     <script src="assets/js/calculator.js"></script>
+    <script src="assets/js/auth.js"></script>
   </body>
 </html>
 
