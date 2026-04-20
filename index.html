@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
@@ -50,7 +50,12 @@
             <input id="login-remember" type="checkbox" name="remember" />
             <label for="login-remember">Lembrar-me neste dispositivo</label>
           </div>
-          <p id="login-error" class="auth-error" role="alert" aria-live="polite"></p>
+          <p
+            id="login-error"
+            class="auth-error"
+            role="alert"
+            aria-live="polite"
+          ></p>
           <button type="submit" class="btn-primary">Entrar</button>
         </form>
         <div class="auth-links">
@@ -62,7 +67,8 @@
           </button>
         </div>
         <p class="auth-hint">
-          Conta demo: usuário <strong>demo</strong>, senha <strong>demo123</strong>
+          Conta demo: usuário <strong>demo</strong>, senha
+          <strong>demo123</strong>
         </p>
       </div>
     </section>
@@ -117,7 +123,12 @@
               required
             />
           </div>
-          <p id="register-error" class="auth-error" role="alert" aria-live="polite"></p>
+          <p
+            id="register-error"
+            class="auth-error"
+            role="alert"
+            aria-live="polite"
+          ></p>
           <button type="submit" class="btn-primary">Registrar</button>
         </form>
         <div class="auth-links">
@@ -139,15 +150,20 @@
       <div class="modal-dialog">
         <h2 id="recover-title" class="modal-title">Recuperar senha</h2>
         <p class="modal-body">
-          Em um sistema real, aqui seria enviado um link por e-mail para redefinir
-          a senha. Esta versão é só front-end e não armazena dados em servidor.
+          Em um sistema real, aqui seria enviado um link por e-mail para
+          redefinir a senha. Esta versão é só front-end e não armazena dados em
+          servidor.
         </p>
         <p class="modal-body">
           Para testar, use a conta demo (<strong>demo</strong> /
           <strong>demo123</strong>) ou crie uma nova conta em
           <strong>Criar conta</strong>.
         </p>
-        <button type="button" class="btn-primary modal-close" id="modal-recover-close">
+        <button
+          type="button"
+          class="btn-primary modal-close"
+          id="modal-recover-close"
+        >
           Fechar
         </button>
       </div>
@@ -161,9 +177,7 @@
     >
       <header class="calc-header">
         <span class="calc-header-title">Calculadora</span>
-        <button type="button" class="btn-logout" id="btn-logout">
-          Sair
-        </button>
+        <button type="button" class="btn-logout" id="btn-logout">Sair</button>
       </header>
       <section class="display" aria-live="off">
         <div
@@ -258,4 +272,3 @@
     <script src="assets/js/auth.js"></script>
   </body>
 </html>
-
