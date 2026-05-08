@@ -1,0 +1,154 @@
+
+# Regra: Commits em pt-BR no padrão SAM (Scoped Angular Message)
+
+## Padrão obrigatório
+
+**SAM — Scoped Angular Message** é uma extensão do Conventional Commits com **escopo obrigatório**.
+
+```
+<tipo>(<escopo>): <resumo em pt-BR no imperativo>
+
+<corpo opcional em pt-BR>
+
+<rodapé opcional: BREAKING CHANGE, refs, closes>
+```
+
+> O escopo é **sempre obrigatório**. Commits sem escopo são rejeitados.
+
+---
+
+## Tipos permitidos
+
+| Tipo | Quando usar |
+|------|-------------|
+| `feat` | Nova funcionalidade |
+| `fix` | Correção de bug |
+| `refactor` | Refatoração sem mudança de comportamento |
+| `style` | Formatação, espaçamento (sem mudança de lógica) |
+| `docs` | Documentação |
+| `test` | Adição ou ajuste de testes |
+| `chore` | Manutenção: build, deps, configs |
+| `perf` | Melhoria de performance |
+| `ci` | Mudanças em CI/CD |
+
+---
+
+## Escopos do projeto (plataforma-rh-web)
+
+Usar sempre o escopo mais específico que descreva o que foi alterado:
+
+| Escopo | Quando usar |
+|--------|-------------|
+| `brand` | BrandService, brand-tokens, theming, logos, CSS vars |
+| `auth` | Login, JWT, AuthGuard, interceptors de autenticação |
+| `sidebar` | SideBarMenu, SideBarItem, navegação lateral |
+| `hero` | Componente hero (login/forgot-password) |
+| `login` | Página de login |
+| `home` | Shell autenticado, layout principal |
+| `cooperator` | Gestão de beneficiários/colaboradores |
+| `financial` | Módulo financeiro, faturas, cobranças |
+| `solicitations` | Solicitações de assistência |
+| `profile` | Meu Perfil |
+| `contact` | Fale Conosco |
+| `shared` | SharedModule, componentes genéricos reutilizáveis |
+| `services` | Serviços de negócio ou infra (genérico) |
+| `interceptors` | HTTP interceptors |
+| `models` | Interfaces e modelos de domínio |
+| `enums` | Enumerações de domínio |
+| `env` | Arquivos de environment |
+| `assets` | Imagens, SVGs, fontes, assets estáticos |
+| `config` | Configurações gerais (angular.json, tsconfig, etc.) |
+| `deps` | Dependências (package.json) |
+| `ci` | Pipelines, workflows, deploy |
+| `agents` | AGENTS.md, regras de agentes, AIOX |
+| `docs` | Documentação do projeto |
+
+> Se nenhum escopo específico se aplicar, usar o módulo/pasta mais próxima.
+
+---
+
+## Exemplos corretos
+
+```bash
+# Funcionalidade nova
+feat(brand): adiciona suporte a multi-brand theming via BrandService
+
+# Correção de bug
+fix(sidebar): corrige exibição do logo substituindo svg-icon por img nativo
+
+# Refatoração
+refactor(hero): migra logo de svg-icon para img com path dinâmico do BrandService
+
+# Documentação
+docs(agents): atualiza AGENTS.md com seção de multi-brand theming
+
+# Configuração
+chore(config): adiciona configurations agiben e agisales no angular.json
+
+# Ambiente
+chore(env): adiciona environment.agiben.ts e environment.agisales.ts
+
+# Assets
+chore(assets): adiciona estrutura de logos por brand em assets/brands/
+
+# CI
+ci(ci): adiciona pipeline de build para brand agisales
+```
+
+---
+
+## Exemplos proibidos
+
+```bash
+# ❌ Sem escopo
+feat: adiciona multi-brand theming
+
+# ❌ Em inglês
+feat(brand): add multi-brand theming support
+
+# ❌ Sem tipo
+(brand): adiciona theming
+
+# ❌ Tipo inválido
+update(sidebar): ajusta logo
+```
+
+---
+
+## Commit com corpo (HEREDOC obrigatório)
+
+```bash
+git commit -m "$(cat <<'EOF'
+fix(sidebar): corrige exibição do logo para todos os brands
+
+O angular-svg-icon usa HttpClient para carregar SVGs, causando
+falha com paths dinâmicos em runtime. Substituído por <img>
+nativo nos componentes side-bar-menu e hero.
+
+Afeta: side-bar-menu.component.html, hero.component.html
+EOF
+)"
+```
+
+---
+
+## Ao sugerir mensagem para o usuário
+
+Sempre apresentar em pt-BR no padrão SAM **antes** de executar:
+
+```
+Mensagem sugerida:
+<tipo>(<escopo>): <resumo em pt-BR>
+
+<corpo se necessário>
+```
+
+---
+
+## Resumo das regras
+
+1. **Escopo obrigatório** — nunca omitir `(<escopo>)`
+2. **Resumo em pt-BR no imperativo** — "adiciona", "corrige", "remove", "atualiza"
+3. **Tipos em inglês** — são convenção técnica universal, não traduzir
+4. **Corpo e rodapé em pt-BR** quando presentes
+5. **Escopo em inglês ou kebab-case** — reflete a estrutura do código, não traduzir

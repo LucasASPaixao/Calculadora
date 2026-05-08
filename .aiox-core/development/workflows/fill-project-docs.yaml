@@ -1,0 +1,662 @@
+workflow:
+  id: fill-project-docs
+  name: Fill Project Docs — Documentação Completa via Multi-Agentes
+  version: "1.0.0"
+  description: >-
+    Workflow multi-agente para preencher os stubs gerados pelo instalador AIOX
+    com conteúdo real do projeto. Combina análise técnica do codebase (@architect),
+    descoberta de negócio (@analyst), produto (@pm), stories (@po) e revisão de
+    viabilidade técnica (@dev).
+
+    Projetado para brownfield (projeto existente com código mas sem docs) ou
+    para projetos que acabaram de rodar o instalador AIOX e têm apenas stubs vazios.
+  type: brownfield
+  project_types:
+    - brownfield-service
+    - brownfield-fullstack
+    - brownfield-ui
+    - post-install-scaffold
+
+  metadata:
+    elicit: true
+    confirmation_required: true
+    action_types:
+      task-reference: "Action references an existing task file in .aiox-core/development/tasks/"
+      agent-command: "Action references an agent-level command (e.g., *fill-project-docs)"
+      workflow-action: "Action is a workflow orchestration step executed via manual prompt"
+
+  # ═══════════════════════════════════════════════════════════════════════════════════════
+  #                              FASES DO WORKFLOW
+  # ═══════════════════════════════════════════════════════════════════════════════════════
+  #
+  #  FASE 1 — PARALELO (sem dependências entre si):
+  #    1a: @architect → docs/framework/ + docs/architecture/  ─┐
+  #    1b: @analyst   → elicitação de contexto de negócio      ├─> PARALELO
+  #                                                             │
+  #  FASE 2 — SEQUENCIAL (requer 1a + 1b):                     │
+  #    2: @pm → docs/prd.md  <───────────────────────────────── ┘
+  #                                   │
+  #  FASE 3 — PARALELO (requer fase 2):
+  #    3a: @po        → docs/stories/ (épicos + stubs) ─┐
+  #    3b: @architect → business-rules.md complementado ├─> PARALELO
+  #                                                      │
+  #  FASE 4 — SEQUENCIAL (requer 3a + 3b):               │
+  #    4: @dev → revisão de viabilidade técnica <──────── ┘
+  #                   │
+  #  FASE 5 — SEQUENCIAL (requer fase 4):
+  #    5: @architect → AGENTS.md Nível 2 atualizado
+  # ═══════════════════════════════════════════════════════════════════════════════════════
+
+  sequence:
+
+    # ═════════════════════════════════════════════════════════════════════════
+    # FASES 1a + 1b — COLETA (rodam em PARALELO)
+    # Sem dependências entre si — iniciar ao mesmo tempo em janelas separadas
+    # ═════════════════════════════════════════════════════════════════════════
+
+    - step: technical_docs
+      phase: "1a"
+      phase_name: "Coleta Técnica"
+      parallel_group: phase1
+      agent: architect
+      action: fill-framework-and-architecture  # task-reference: fill-project-docs.md
+      creates:
+        - docs/framework/tech-stack.md
+        - docs/framework/source-tree.md
+        - docs/framework/coding-standards.md
+        - docs/architecture.md
+        - docs/architecture/design.md
+        - docs/architecture/enums.md
+        - docs/architecture/integrations.md
+        - docs/architecture/setup.md
+        - docs/architecture/business-rules.md  # parte técnica apenas; produto será complementado na fase 3b
+        - docs/architecture/concerns.md  # riscos, tech debt, áreas frágeis (protocolo TLC quando habilitado)
+      elicit: false
+      duration_estimate: "40-70 min"
+      notes: |
+        @architect analisa o codebase e preenche toda a documentação técnica:
+
+        ANÁLISE NECESSÁRIA (usar ferramentas de leitura de código):
+        - package.json / requirements.txt / pom.xml para stack real
+        - docker-compose.yml / Dockerfile para infra local
+        - .env.example para variáveis de ambiente
+        - Estrutura de diretórios: src/, lib/, app/, etc.
+        - Entry points: index.*, main.*, app.*, server.*
+        - 5-10 arquivos representativos para inferir padrões
+        - Arquivos de teste para entender padrões de teste
+        - CI/CD configs (.github/workflows/, Jenkinsfile)
+
+        REGRAS DE PREENCHIMENTO:
+        - Substituir hints _(...)_ pelo conteúdo real extraído do código
+        - Nunca inventar — se não encontrar evidência, escrever "A definir — [razão]"
+        - Em business-rules.md: preencher APENAS as regras evidenciadas em código
+          (validações, guards, middlewares). Deixar seção "Regras de Produto" em branco
+          com nota: "A validar com PM/PO na Fase 3b"
+        - Referenciar arquivos reais: "ver src/services/UserService.ts" em vez de duplicar código
+
+        DOCS/FRAMEWORK — preencher:
+        - tech-stack.md: runtime, versões, ORM, banco, infra, build tools, testes
+        - source-tree.md: árvore real de módulos com responsabilidade de cada pasta
+        - coding-standards.md: naming conventions, tipagem, estrutura de testes, imports
+
+        DOCS/ARCHITECTURE — preencher:
+        - architecture.md: tipo de arquitetura, camadas, fluxo de request/event
+        - design.md: camadas e dependências, templates por camada, anti-padrões visíveis
+        - enums.md: todos os enums/constantes de domínio com valores e onde são usados
+        - integrations.md: serviços externos, tipo de integração, autenticação (sem credenciais)
+        - setup.md: pré-requisitos, passos de setup local, variáveis obrigatórias, comandos de banco
+        - business-rules.md: regras no código (validações, guards); MARCAR produto como "A validar"
+        - concerns.md: riscos com evidência (paths); omitir seções vazias
+
+        TLC Spec-Driven (se core-config.yaml tlc_spec_driven.enabled: true):
+        - Ler `.aiox-core/skills/tlc-spec-driven/references/brownfield-mapping.md` e `references/concerns.md`
+          como protocolo complementar (amostragem 5-10 arquivos por categoria, budgets por doc,
+          Knowledge Verification Chain: codebase → docs → Context7 MCP → web → marcar incerteza)
+        - Preencher concerns.md com o mesmo rigor do reference (apenas itens com evidência)
+
+        COMANDO: @architect → *fill-project-docs --scope technical
+
+        OUTPUT: docs/framework/* + docs/architecture/* (parte técnica)
+
+    - step: business_elicitation
+      phase: "1b"
+      phase_name: "Elicitação de Negócio"
+      parallel_group: phase1
+      agent: analyst
+      action: business_discovery_interview
+      creates:
+        - docs/_business-discovery.md  # artefato interno, não é um doc final do scaffold
+      elicit: true
+      duration_estimate: "20-40 min"
+      notes: |
+        @analyst conduz sessão de elicitação de negócio com o usuário.
+        Este passo NÃO analisa código — captura o contexto de produto
+        que o código não revela por si só.
+
+        PERGUNTAS OBRIGATÓRIAS (estruturar como entrevista):
+        1. Qual o objetivo principal do produto? (problema que resolve)
+        2. Quem são os usuários/personas principais? (1-3 personas)
+        3. Quais funcionalidades já estão implementadas? (listar o que existe)
+        4. Quais são as principais regras de negócio do domínio?
+           (regras que talvez o código não deixe óbvias)
+        5. Existe roadmap ou features planejadas para breve?
+        6. Há algum documento de produto existente? (PRD, Notion, Confluence, etc.)
+        7. Qual o estágio atual: MVP, produto em crescimento, consolidado?
+
+        FORMATO DO OUTPUT (docs/_business-discovery.md):
+        ```markdown
+        # Business Discovery — [Nome do Projeto]
+        Data: [data]
+        Conduzido por: @analyst
+
+        ## Objetivo do Produto
+        [resposta]
+
+        ## Personas
+        | Persona | Objetivo Principal | Dores |
+        |---------|-------------------|-------|
+
+        ## Funcionalidades Existentes (levantadas pelo usuário)
+        - [lista]
+
+        ## Regras de Negócio (mencionadas pelo usuário)
+        - [lista]
+
+        ## Roadmap / Próximas Features
+        - [lista ou "A definir"]
+
+        ## Documentação de Produto Existente
+        [links ou "Nenhuma"]
+
+        ## Estágio do Produto
+        [MVP / Crescimento / Consolidado]
+        ```
+
+        COMANDO: @analyst (sessão interativa com o usuário)
+
+        OUTPUT: docs/_business-discovery.md (interno — será consumido por @pm na fase 2)
+
+    # ═════════════════════════════════════════════════════════════════════════
+    # FASE 2 — PRD (requer 1a + 1b)
+    # ═════════════════════════════════════════════════════════════════════════
+
+    - step: prd_creation
+      phase: "2"
+      phase_name: "PRD"
+      agent: pm
+      action: fill-prd  # task-reference: fill-project-docs.md (scope prd)
+      creates:
+        - docs/prd.md
+      requires:
+        - docs/framework/tech-stack.md       # fase 1a
+        - docs/architecture.md               # fase 1a
+        - docs/_business-discovery.md        # fase 1b
+      elicit: true
+      duration_estimate: "30-50 min"
+      notes: |
+        @pm combina o contexto técnico do @architect (fase 1a) com a
+        descoberta de negócio do @analyst (fase 1b) para preencher docs/prd.md.
+
+        LER ANTES DE INICIAR:
+        1. docs/architecture.md (visão técnica do sistema)
+        2. docs/framework/tech-stack.md (stack e integrações)
+        3. docs/_business-discovery.md (contexto de negócio elicitado)
+
+        PREENCHER EM docs/prd.md:
+        - Objetivo do produto (da discovery)
+        - Personas (da discovery + inferência do código)
+        - Funcionalidades existentes agrupadas por épico
+          (combinar lista da discovery com o que o código evidencia)
+        - Critérios de sucesso do produto
+        - Roadmap de próximas features (se levantado na discovery)
+
+        REGRAS:
+        - Manter tom de produto, não técnico
+        - Não duplicar conteúdo técnico que já está em docs/architecture/
+        - Não sobrescrever o que o usuário já escreveu manualmente no stub
+        - Para itens sem evidência, usar "A definir" com contexto
+
+        HANDOFF PARA @po (fase 3a):
+        Ao finalizar, avisar:
+        "docs/prd.md preenchido. @po pode iniciar fase 3a: criar estrutura de stories."
+
+        COMANDO: @pm → *fill-project-docs --scope prd
+
+        OUTPUT: docs/prd.md preenchido
+
+    # ═════════════════════════════════════════════════════════════════════════
+    # FASES 3a + 3b — STORIES + BUSINESS RULES (rodam em PARALELO)
+    # Ambas requerem docs/prd.md da fase 2
+    # ═════════════════════════════════════════════════════════════════════════
+
+    - step: stories_structure
+      phase: "3a"
+      phase_name: "Stories e Épicos"
+      parallel_group: phase3
+      agent: po
+      action: fill-stories  # task-reference: fill-project-docs.md (scope stories)
+      creates:
+        - docs/stories/README.md
+        - docs/stories/epic-001/epic-001.md
+        - docs/stories/epic-NNN/story-N.M.titulo.md  # repetir por épico/story
+      requires:
+        - docs/prd.md           # fase 2
+      elicit: true
+      duration_estimate: "30-60 min"
+      notes: |
+        @po cria a estrutura de épicos e stories baseada no docs/prd.md
+        e nas funcionalidades identificadas no código (fase 1a).
+
+        LER ANTES DE INICIAR:
+        1. docs/prd.md (épicos e funcionalidades)
+        2. docs/architecture.md (estrutura do sistema para mapear domínios)
+        3. docs/stories/README.md (stub com orientações do scaffold)
+
+        PASSO 1 — PROPOR MAPEAMENTO DE ÉPICOS:
+        Apresentar ao usuário uma proposta de épicos antes de criar arquivos:
+        ```
+        Com base no docs/prd.md e na análise do código (fase 1a),
+        proponho os seguintes épicos:
+
+        Epic 001 — [nome] — [funcionalidades agrupadas]
+        Epic 002 — [nome] — [funcionalidades agrupadas]
+        ...
+
+        Confirma? Posso ajustar nomes, juntar ou separar épicos.
+        ```
+
+        PASSO 2 — CRIAR ESTRUTURA (após confirmação):
+        Para cada épico aprovado:
+        - Criar docs/stories/epic-NNN/ (pasta)
+        - Criar docs/stories/epic-NNN/epic-NNN.md (visão do épico)
+        - Para cada funcionalidade mapeada:
+          criar docs/stories/epic-NNN/story-N.M.titulo.md
+          com status "done" (já implementada) ou "draft" (sugerida)
+
+        PASSO 3 — ATUALIZAR README:
+        Atualizar docs/stories/README.md com índice de épicos criados.
+
+        FORMATO DE STORY (padrão AIOX — ver .aiox-core/development/templates/):
+        - Title, ID, Status, Epic, Description
+        - Acceptance Criteria (AC) — baseados no comportamento real do código
+        - Não inventar ACs sem evidência no código ou na discovery
+
+        HANDOFF PARA @dev (fase 4):
+        "docs/stories/ estruturado. @dev pode revisar viabilidade técnica."
+
+        COMANDO: @po → *fill-project-docs --scope stories
+
+        OUTPUT: docs/stories/ com épicos e stories stub
+
+    - step: business_rules_complement
+      phase: "3b"
+      phase_name: "Business Rules (produto)"
+      parallel_group: phase3
+      agent: architect
+      action: complement-business-rules
+      creates:
+        - docs/architecture/business-rules.md  # complementar a parte técnica da fase 1a
+      requires:
+        - docs/prd.md                                  # fase 2
+        - docs/architecture/business-rules.md          # fase 1a (parte técnica já preenchida)
+        - docs/_business-discovery.md                  # fase 1b
+      elicit: false
+      duration_estimate: "15-25 min"
+      notes: |
+        @architect complementa docs/architecture/business-rules.md
+        com as regras de produto identificadas no docs/prd.md e
+        na discovery de negócio (fase 1b).
+
+        A fase 1a preencheu as regras de domínio encontradas no código.
+        Esta fase adiciona as regras de negócio de produto:
+        - Regras mencionadas na discovery que não estão no código
+        - Regras implícitas que o PRD revelou
+        - Marcar claramente a origem: [código] vs [produto]
+
+        ESTRUTURA RECOMENDADA em business-rules.md:
+        ```markdown
+        ## Regras de Código (extraídas do codebase)
+        | Regra | Onde no código | Quando se aplica |
+
+        ## Regras de Produto (elicitadas / PRD)
+        | Regra | Fonte | Impacto |
+
+        ## A Validar
+        | Item | Responsável | Prazo |
+        ```
+
+        COMANDO: @architect (prompt manual lendo prd.md + business-discovery.md)
+
+        OUTPUT: docs/architecture/business-rules.md completo (código + produto)
+
+    # ═════════════════════════════════════════════════════════════════════════
+    # FASE 4 — REVISÃO TÉCNICA DAS STORIES (requer 3a)
+    # ═════════════════════════════════════════════════════════════════════════
+
+    - step: dev_technical_review
+      phase: "4"
+      phase_name: "Revisão Técnica de Stories"
+      agent: dev
+      action: review_stories_feasibility
+      creates:
+        - docs/stories/_dev-review.md  # artefato interno com anotações técnicas
+      requires:
+        - docs/stories/epic-001/epic-001.md   # fase 3a
+        - docs/framework/tech-stack.md         # fase 1a
+        - docs/architecture/design.md          # fase 1a
+      optional: true
+      elicit: false
+      duration_estimate: "20-40 min"
+      notes: |
+        @dev revisa as stories criadas pelo @po e anota:
+
+        LER ANTES DE INICIAR:
+        1. Todos os arquivos em docs/stories/
+        2. docs/framework/tech-stack.md
+        3. docs/architecture/design.md
+
+        VERIFICAR PARA CADA STORY:
+        1. Os ACs são tecnicamente viáveis com a stack atual?
+        2. Há dependências entre stories não mapeadas?
+        3. Alguma story afeta partes do código marcadas como legado/frágil?
+        4. Estimativa técnica de complexidade: Simples / Médio / Complexo
+
+        FORMATO DO OUTPUT (docs/stories/_dev-review.md):
+        ```markdown
+        # Dev Technical Review — Stories
+        Data: [data]
+        Revisado por: @dev
+
+        ## Stories Aprovadas sem Ressalvas
+        - [story-id]: [título]
+
+        ## Stories com Observações Técnicas
+        | Story | Observação | Ação Recomendada |
+        |-------|------------|------------------|
+
+        ## Stories Bloqueadas
+        | Story | Motivo | Dependência necessária |
+        |-------|--------|----------------------|
+
+        ## Dependências Não Mapeadas
+        - [descrever]
+
+        ## Sugestão de Ordem de Desenvolvimento
+        [ordem recomendada considerando deps técnicas]
+        ```
+
+        HANDOFF PARA @po (se houver bloqueios):
+        "Revisão concluída. Há X stories com observações. Ajustar antes de prosseguir?"
+
+        HANDOFF PARA @architect (fase 5):
+        "Stories revisadas tecnicamente. @architect pode atualizar AGENTS.md."
+
+        COMANDO: @dev (leitura de docs/stories/ + análise técnica)
+
+        OUTPUT: docs/stories/_dev-review.md (anotações internas)
+
+    # ═════════════════════════════════════════════════════════════════════════
+    # FASE 5 — ATUALIZAR AGENTS.MD (requer 3a + 3b + 4)
+    # ═════════════════════════════════════════════════════════════════════════
+
+    - step: update_agents_md
+      phase: "5"
+      phase_name: "Atualizar AGENTS.md — Nível 2"
+      agent: architect
+      action: update_agents_context_router
+      creates:
+        - AGENTS.md  # seção Nível 2 (fora dos blocos AIOX-MANAGED)
+      requires:
+        - docs/stories/README.md               # fase 3a
+        - docs/architecture/business-rules.md  # fase 3b
+        - docs/stories/_dev-review.md          # fase 4 (se executada)
+      elicit: false
+      duration_estimate: "15-20 min"
+      notes: |
+        @architect atualiza a tabela do Nível 2 no AGENTS.md do projeto
+        com os domínios e keywords reais identificados durante o workflow.
+
+        LER ANTES DE INICIAR:
+        1. docs/stories/README.md (épicos mapeados)
+        2. docs/architecture/business-rules.md (domínios de negócio)
+        3. AGENTS.md (seção atual do Nível 2)
+
+        PREENCHER NO AGENTS.MD — Nível 2:
+        ```markdown
+        | Domínio / Épico | Keywords para acionar | Carregar |
+        |-----------------|----------------------|----------|
+        | [nome real]     | [palavras do código + produto] | docs/stories/epic-NNN/ |
+        ```
+
+        REGRAS CRÍTICAS:
+        - NÃO editar blocos <!-- AIOX-MANAGED-START/END --> (serão sobrescritos)
+        - Apenas editar a seção Nível 2 fora dos blocos managed
+        - Usar keywords REAIS do domínio (não genéricas como "user", "data")
+        - Atualizar "Última revisão" no cabeçalho
+
+        COMANDO: @architect (edição manual do AGENTS.md — seção Nível 2)
+
+        OUTPUT: AGENTS.md com router de contexto atualizado
+
+    # ═════════════════════════════════════════════════════════════════════════
+    # FIM DO WORKFLOW
+    # ═════════════════════════════════════════════════════════════════════════
+
+    - meta: end
+      action: fill_project_docs_complete
+      notes: |
+        ✅ FILL-PROJECT-DOCS COMPLETO!
+
+        Artefatos finais do scaffold AIOX:
+        ```
+        docs/
+        ├── prd.md                             ✅ [FASE 2 — @pm]
+        ├── architecture.md                    ✅ [FASE 1a — @architect]
+        ├── framework/
+        │   ├── tech-stack.md                  ✅ [FASE 1a — @architect]
+        │   ├── source-tree.md                 ✅ [FASE 1a — @architect]
+        │   └── coding-standards.md            ✅ [FASE 1a — @architect]
+        ├── architecture/
+        │   ├── business-rules.md              ✅ [FASE 1a + 3b — @architect]
+        │   ├── design.md                      ✅ [FASE 1a — @architect]
+        │   ├── enums.md                       ✅ [FASE 1a — @architect]
+        │   ├── integrations.md                ✅ [FASE 1a — @architect]
+        │   └── setup.md                       ✅ [FASE 1a — @architect]
+        └── stories/
+            ├── README.md                      ✅ [FASE 3a — @po]
+            ├── epic-001/
+            │   ├── epic-001.md                ✅ [FASE 3a — @po]
+            │   └── story-1.*.md               ✅ [FASE 3a — @po]
+            └── _dev-review.md                 ✅ [FASE 4 — @dev] (interno)
+
+        AGENTS.md — Nível 2 atualizado                    ✅ [FASE 5 — @architect]
+        docs/_business-discovery.md (interno)             ✅ [FASE 1b — @analyst]
+        ```
+
+        PRÓXIMOS PASSOS:
+        1. Remover artefatos internos se desejar:
+           - docs/_business-discovery.md
+           - docs/stories/_dev-review.md
+        2. Revisar qualquer item marcado como "A definir"
+        3. Iniciar desenvolvimento: @sm → *draft (primeira story)
+
+        TEMPO TOTAL ESTIMADO: 2,5 a 5 horas (paralelo) / 4 a 7 horas (sequencial)
+
+  # ═══════════════════════════════════════════════════════════════════════════════════════
+  #                              FLOW DIAGRAM
+  # ═══════════════════════════════════════════════════════════════════════════════════════
+
+  flow_diagram: |
+    ```mermaid
+    graph TD
+        START([Início: stubs do scaffold instalados]) --> P1a
+        START --> P1b
+
+        subgraph PHASE1["FASE 1 — PARALELO"]
+            P1a["🏛️ @architect\nFase 1a: docs/framework/ + docs/architecture/\n(parte técnica)\n40-70 min"]
+            P1b["🔍 @analyst\nFase 1b: elicitação de negócio\n(interview com usuário)\n20-40 min"]
+        end
+
+        P1a --> P2
+        P1b --> P2
+
+        subgraph PHASE2["FASE 2 — SEQUENCIAL"]
+            P2["📋 @pm\nFase 2: docs/prd.md\n(técnica + negócio combinados)\n30-50 min"]
+        end
+
+        P2 --> P3a
+        P2 --> P3b
+
+        subgraph PHASE3["FASE 3 — PARALELO"]
+            P3a["🎯 @po\nFase 3a: docs/stories/\n(épicos + story stubs)\n30-60 min"]
+            P3b["🏛️ @architect\nFase 3b: business-rules.md\n(complemento produto)\n15-25 min"]
+        end
+
+        P3a --> P4
+        P3b --> P4
+
+        subgraph PHASE4["FASE 4 — SEQUENCIAL (opcional)"]
+            P4["⚙️ @dev\nFase 4: revisão técnica\ndas stories\n20-40 min"]
+        end
+
+        P4 --> P5
+
+        subgraph PHASE5["FASE 5 — SEQUENCIAL"]
+            P5["🏛️ @architect\nFase 5: AGENTS.md\nNível 2 atualizado\n15-20 min"]
+        end
+
+        P5 --> END(["✅ Docs completos\nAGENTS.md atualizado"])
+
+        style P1a fill:#ADD8E6
+        style P1b fill:#DDA0DD
+        style P2  fill:#FFE4B5
+        style P3a fill:#90EE90
+        style P3b fill:#ADD8E6
+        style P4  fill:#F0E68C
+        style P5  fill:#ADD8E6
+        style END fill:#90EE90
+        style START fill:#E8E8E8
+    ```
+
+  # ═══════════════════════════════════════════════════════════════════════════════════════
+  #                              QUICK REFERENCE
+  # ═══════════════════════════════════════════════════════════════════════════════════════
+
+  quick_reference:
+    fase_1a:
+      name: "Coleta Técnica"
+      agent: "@architect"
+      command: "*fill-project-docs --scope technical"
+      output: "docs/framework/* + docs/architecture/* (técnico)"
+      duration: "40-70 min"
+      parallel_with: "fase_1b"
+    fase_1b:
+      name: "Elicitação de Negócio"
+      agent: "@analyst"
+      command: "sessão interativa"
+      output: "docs/_business-discovery.md"
+      duration: "20-40 min"
+      parallel_with: "fase_1a"
+    fase_2:
+      name: "PRD"
+      agent: "@pm"
+      command: "*fill-project-docs --scope prd"
+      output: "docs/prd.md"
+      duration: "30-50 min"
+      requires: "fase_1a + fase_1b"
+    fase_3a:
+      name: "Stories e Épicos"
+      agent: "@po"
+      command: "*fill-project-docs --scope stories"
+      output: "docs/stories/epic-*/ + story-*.md"
+      duration: "30-60 min"
+      parallel_with: "fase_3b"
+      requires: "fase_2"
+    fase_3b:
+      name: "Business Rules (produto)"
+      agent: "@architect"
+      command: "prompt manual"
+      output: "docs/architecture/business-rules.md (completo)"
+      duration: "15-25 min"
+      parallel_with: "fase_3a"
+      requires: "fase_2"
+    fase_4:
+      name: "Revisão Técnica de Stories"
+      agent: "@dev"
+      command: "revisão manual"
+      output: "docs/stories/_dev-review.md"
+      duration: "20-40 min"
+      optional: true
+      requires: "fase_3a + fase_3b"
+    fase_5:
+      name: "Atualizar AGENTS.md"
+      agent: "@architect"
+      command: "edição manual"
+      output: "AGENTS.md — Nível 2 atualizado"
+      duration: "15-20 min"
+      requires: "fase_4 (ou fase_3a se fase_4 pulada)"
+
+  time_estimate:
+    parallel_execution: "2,5 a 5 horas"
+    sequential_execution: "4 a 7 horas"
+    minimal_no_stories: "1,5 a 3 horas (apenas fases 1a, 1b, 2)"
+
+  decision_guidance:
+    when_to_use:
+      - Projeto acabou de receber o scaffold do instalador AIOX
+      - Codebase existente sem documentação estruturada
+      - Onboarding em projeto legado (em conjunto com brownfield-discovery)
+      - Migração de docs/context/ para docs/architecture/ (padrão AIOX)
+      - Atualização completa de docs obsoletos
+    when_not_to_use:
+      - Projeto novo sem código (usar greenfield-* workflows)
+      - Apenas um doc precisa ser atualizado (usar agent diretamente)
+      - Assessment de dívida técnica (usar brownfield-discovery)
+    skip_conditions:
+      fase_1b: "Usuário já tem PRD ou documento de produto — pular para fase 2 direto"
+      fase_4: "Stories são simples e equipe tem contexto técnico suficiente"
+
+  handoff_prompts:
+    phase1_complete: |
+      Fases 1a e 1b completas:
+      - docs/framework/* preenchidos ✅
+      - docs/architecture/* (parte técnica) preenchidos ✅
+      - docs/_business-discovery.md criado ✅
+
+      Próximo: @pm → Fase 2 (docs/prd.md)
+      Combine os outputs de ambas as fases.
+
+    phase2_complete: |
+      docs/prd.md preenchido ✅
+
+      Próximo (PARALELO):
+      - @po → Fase 3a: criar docs/stories/ (épicos + story stubs)
+      - @architect → Fase 3b: complementar business-rules.md com produto
+
+    phase3_complete: |
+      Fase 3 completa:
+      - docs/stories/ estruturado com épicos e stories ✅
+      - docs/architecture/business-rules.md completo (código + produto) ✅
+
+      Próximo: @dev → Fase 4: revisão técnica de viabilidade das stories
+      (opcional — pular se equipe tem contexto técnico suficiente)
+
+    phase4_complete: |
+      Revisão técnica concluída ✅
+      docs/stories/_dev-review.md disponível.
+
+      Próximo: @architect → Fase 5: atualizar AGENTS.md Nível 2
+      com keywords reais do domínio.
+
+    workflow_complete: |
+      ✅ Fill-Project-Docs completo!
+
+      Scaffold AIOX totalmente preenchido com conteúdo real do projeto.
+
+      Verificar:
+      - Itens "A definir" pendentes de revisão humana
+      - docs/_business-discovery.md e docs/stories/_dev-review.md
+        podem ser removidos (são artefatos internos do workflow)
+
+      Pronto para desenvolvimento:
+      @sm → *draft (próxima story do backlog)

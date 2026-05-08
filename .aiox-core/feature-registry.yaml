@@ -1,0 +1,12 @@
+features:
+  - pro.memory.synapse
+  - pro.memory.extended
+  - pro.memory.persistence
+  - pro.squads.premium
+  - pro.squads.custom
+  - pro.squads.marketplace
+  - pro.metrics.advanced
+  - pro.integrations.linear
+  - pro.integrations.notion
+  - pro.integrations.jira
+  - pro.integrations.clickup

@@ -1,0 +1,82 @@
+---
+alwaysApply: false
+globs:
+  - .mcp/**
+  - .aiox-core/infrastructure/**
+  - '**/mcp*.{json,yaml,yml}'
+---
+
+
+# MCP Server Usage Rules — AIOX Architecture
+
+## MCP Governance
+
+**IMPORTANT:** All MCP infrastructure management is handled EXCLUSIVELY by the **DevOps Agent (@devops / Gage)**.
+
+| Operation | Agent | Command |
+|-----------|-------|---------|
+| Search MCP catalog | DevOps | `*search-mcp` |
+| Add MCP server | DevOps | `*add-mcp` |
+| List enabled MCPs | DevOps | `*list-mcps` |
+| Remove MCP server | DevOps | `*remove-mcp` |
+| Setup MCP infrastructure | DevOps | `*setup-mcp` |
+
+Other agents (Dev, Architect, etc.) are MCP **consumers**, not administrators. If MCP management is needed, delegate to @devops.
+
+---
+
+## Tool Selection Priority
+
+ALWAYS prefer native IDE tools over MCP servers:
+
+| Task | Prefer | Avoid (unless necessary) |
+|------|--------|--------------------------|
+| Read files | Native read tool | MCP gateway |
+| Write files | Native write/edit tool | MCP gateway |
+| Run commands | Native shell/bash | MCP gateway |
+| Search files | Native glob tool | MCP gateway |
+| Search content | Native grep tool | MCP gateway |
+
+Use MCP tools ONLY when native tools cannot perform the task.
+
+---
+
+## Common AIOX MCPs
+
+### Search & Research
+Use web search MCPs (e.g., EXA) for:
+- Current information lookup
+- Research and documentation
+- Company and competitor analysis
+
+### Documentation Lookup
+Use documentation MCPs (e.g., Context7) for:
+- Library documentation lookup
+- API reference for packages/frameworks
+- Up-to-date docs for dependencies
+
+### Browser Automation
+Use browser automation MCPs (e.g., Playwright) for:
+1. Browser automation explicitly requested by user
+2. Screenshots of web pages
+3. Web scraping or testing
+4. Filling forms or clicking elements
+
+---
+
+## MCP Consumer Guidelines
+
+When using MCP tools as a consumer:
+1. Check if a native tool can accomplish the task first
+2. Use the most specific MCP for the task
+3. Handle MCP errors gracefully (fallback to native tools when possible)
+4. Report MCP configuration issues to @devops
+
+---
+
+## When to Escalate to @devops
+
+- MCP server is unavailable or returns authentication errors
+- Need to add, remove, or configure a new MCP server
+- MCP configuration needs updating
+- Setting up MCP infrastructure for a new environment

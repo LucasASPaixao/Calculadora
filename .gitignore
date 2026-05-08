@@ -2,3 +2,43 @@ node_modules/
 dist/
 .env
 .DS_Store
+
+# Environment & Secrets
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Dependencies
+node_modules
+
+# Build & Logs
+build/
+*.log
+logs/
+
+# IDE & OS
+Thumbs.db
+.idea/
+*.swp
+
+# AIOX Local
+.aiox/install-log.txt
+
+# AIOX Installer Generated
+#.aiox-core/
+#.claude/
+#.codex/
+#.gemini/
+#.cursor/
+#.github/agents
+#.github/instructions
+#.github/prompts
+#.github/copilot-instructions.md
+#.antigravity/
+#.windsurf/
+#.windsurfrules
+#AGENTS.md
+#squads/
+#pro-version.json
+#pro-installed-manifest.yaml

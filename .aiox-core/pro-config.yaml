@@ -1,0 +1,18 @@
+pro:
+  enabled: true
+  version: "0.1.0"
+
+memory:
+  provider: synapse
+  persistence: true
+
+squads:
+  premium: true
+  custom: true
+  marketplace: true
+
+integrations:
+  linear: false
+  notion: false
+  jira: false
+  clickup: false

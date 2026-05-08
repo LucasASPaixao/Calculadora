@@ -1,0 +1,96 @@
+
+# Regra: Proibição de `any` em TypeScript
+
+## Regra
+
+O agente **NUNCA** deve escrever, sugerir ou aceitar `any` explícito em arquivos TypeScript de produção (`.ts`, `.tsx`).
+
+Esta regra se aplica a **todos os agentes**: `@dev`, `@architect`, `@qa`, `@aiox-master` e qualquer outro que gere ou revise código TypeScript.
+
+---
+
+## Proibido
+
+```typescript
+// ❌ any explícito
+const data: any = fetchData();
+function process(input: any) { ... }
+const result = value as any;
+(window as any).myGlobal = true;
+```
+
+---
+
+## Alternativas obrigatórias
+
+### Tipo desconhecido → usar `unknown` + type guard
+
+```typescript
+// ✅ unknown com narrowing
+function process(input: unknown) {
+  if (typeof input === 'string') {
+    return input.toUpperCase();
+  }
+  throw new Error('Input must be a string');
+}
+```
+
+### Objeto genérico → usar `Record` ou generics
+
+```typescript
+// ✅ Record para objetos chave-valor
+const config: Record<string, string> = {};
+
+// ✅ Generic para funções reutilizáveis
+function identity<T>(value: T): T {
+  return value;
+}
+```
+
+### Resposta de API externa → tipar explicitamente
+
+```typescript
+// ✅ Interface declarada
+interface ApiResponse {
+  id: number;
+  name: string;
+}
+const data: ApiResponse = await fetch('/api/user').then(r => r.json());
+```
+
+### Tipo parcialmente conhecido → usar `Partial`, `Pick`, `Omit`
+
+```typescript
+// ✅ Utilitários do TypeScript
+function updateUser(id: string, fields: Partial<User>) { ... }
+```
+
+---
+
+## Exceções permitidas (únicas)
+
+1. **Arquivos de teste** (`.test.ts`, `.spec.ts`) — quando estritamente necessário para mocks
+2. **Arquivos de declaração de tipo** (`.d.ts`) — para interoperabilidade com libs sem tipos
+3. **`@ts-ignore` com comentário obrigatório** explicando o motivo — nunca silencioso
+
+```typescript
+// ✅ Exceção documentada
+// @ts-ignore — lib `xpto` não tem tipos e não existe @types/xpto
+const result = xpto.doSomething();
+```
+
+---
+
+## Ao revisar código (QA / code review)
+
+O agente `@qa` deve:
+- Rejeitar qualquer PR/story que contenha `any` em código de produção sem exceção documentada
+- Incluir no relatório de QA a localização exata do `any` encontrado
+- Sugerir a alternativa correta (`unknown`, generic, interface)
+
+---
+
+## Enforcement
+
+Esta regra complementa a configuração ESLint (`@typescript-eslint/no-explicit-any`).
+Se o lint estiver configurado como `'warn'`, esta rule de agente serve como barreira adicional antes do código chegar ao lint.
