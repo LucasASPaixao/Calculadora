@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login — Calculadora</title>
+    <link rel="stylesheet" href="assets/css/login.css" />
+  </head>
+  <body data-api-base="http://localhost:3001">
+    <main class="auth-card" aria-labelledby="auth-title">
+      <h1 id="auth-title" class="auth-title">Acesso</h1>
+      <p class="auth-subtitle">Entre com sua conta para continuar</p>
+
+      <div class="auth-tabs" role="tablist" aria-label="Login ou cadastro">
+        <button type="button" id="tab-login" class="auth-tab is-active" role="tab" aria-selected="true" aria-controls="panel-login">
+          Entrar
+        </button>
+        <button type="button" id="tab-register" class="auth-tab" role="tab" aria-selected="false" aria-controls="panel-register">
+          Criar conta
+        </button>
+      </div>
+
+      <div id="msg" class="auth-message" role="status" aria-live="polite" hidden></div>
+
+      <section id="panel-login" class="auth-panel" role="tabpanel" aria-labelledby="tab-login">
+        <form id="form-login" class="auth-form" novalidate>
+          <label class="field">
+            <span class="field-label">E-mail</span>
+            <input type="email" name="email" autocomplete="email" required aria-required="true" />
+          </label>
+          <label class="field">
+            <span class="field-label">Senha</span>
+            <input type="password" name="password" autocomplete="current-password" required aria-required="true" />
+          </label>
+          <button type="submit" class="btn-primary">Entrar</button>
+        </form>
+      </section>
+
+      <section id="panel-register" class="auth-panel is-hidden" role="tabpanel" aria-labelledby="tab-register" hidden>
+        <form id="form-register" class="auth-form" novalidate>
+          <label class="field">
+            <span class="field-label">Nome</span>
+            <input type="text" name="name" autocomplete="name" required aria-required="true" />
+          </label>
+          <label class="field">
+            <span class="field-label">E-mail</span>
+            <input type="email" name="email" autocomplete="email" required aria-required="true" />
+          </label>
+          <label class="field">
+            <span class="field-label">Senha</span>
+            <input type="password" name="password" autocomplete="new-password" required aria-required="true" minlength="6" />
+          </label>
+          <button type="submit" class="btn-primary">Cadastrar</button>
+        </form>
+      </section>
+    </main>
+    <script src="assets/js/login.js"></script>
+  </body>
+</html>

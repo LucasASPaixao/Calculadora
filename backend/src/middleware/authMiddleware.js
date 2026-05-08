@@ -1,0 +1,27 @@
+const jwt = require("jsonwebtoken");
+const { env } = require("../config/env");
+
+function authMiddleware(req, res, next) {
+  const header = req.headers.authorization;
+  if (!header || !header.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Token ausente ou inválido" });
+  }
+
+  const token = header.slice("Bearer ".length).trim();
+  if (!token) {
+    return res.status(401).json({ error: "Token ausente ou inválido" });
+  }
+
+  try {
+    const payload = jwt.verify(token, env.jwt.secret);
+    if (typeof payload.sub !== "string" && typeof payload.sub !== "number") {
+      return res.status(401).json({ error: "Token inválido" });
+    }
+    req.auth = { sub: String(payload.sub), email: payload.email };
+    return next();
+  } catch {
+    return res.status(401).json({ error: "Token inválido ou expirado" });
+  }
+}
+
+module.exports = { authMiddleware };

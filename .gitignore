@@ -4,6 +4,7 @@ dist/
 .DS_Store
 
 # Environment & Secrets
+backend/.env
 .env.local
 .env.*.local
 *.key
