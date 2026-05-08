@@ -150,9 +150,16 @@ Carregados pelo `@dev` via `devLoadAlwaysFiles` em `core-config.yaml`. Demais ag
 
 ### Nivel 2 — Por dominio (keywords)
 
-| Palavras-chave | Carregar primeiro | Carregar tambem |
-|----------------|-------------------|-----------------|
-| _(preencha por dominio)_ | `docs/prd.md` / epic em `docs/stories/epic-NNN/` | `docs/stories/.../story-N.M.*.md` |
+> Ultima revisao: 2026-05-08
+
+| Dominio / Epico | Palavras-chave para acionar | Carregar |
+|-----------------|----------------------------|----------|
+| Calculadora — MVP (Epic-001) | calculadora, display, visor, expressao, resultado, operacao, digito, operador, decimal, botao, teclado, clear, delete, equals, estado, calculatorState | `docs/stories/epic-001/epic-001.md` |
+| Logica de avaliacao | sanitize, new Function, eval, expressao matematica, resultado ao vivo, evaluateExpression, lastActionWasEquals | `docs/stories/epic-001/story-1.3.logica-calculadora.md` |
+| Interface e estilizacao | CSS, grid, flexbox, tema escuro, botao, key-operator, key-equals, styles, responsivo | `docs/stories/epic-001/story-1.2.estilizacao.md` |
+| Suporte a teclado | keydown, keyboard, teclado, handleKeyDown, Backspace, Escape, Enter | `docs/stories/epic-001/story-1.4.suporte-teclado.md` |
+| Qualidade e testes | teste, test, Vitest, Jest, cobertura, coverage, funcao pura, refatorar | `docs/architecture/concerns.md` |
+| Seguranca | sanitizacao, new Function, eval, XSS, injection | `docs/architecture/concerns.md`, `docs/architecture/business-rules.md` |
 
 Regra: carregar epic/story antes de implementar; nao inventar comportamento fora do documentado.
 
